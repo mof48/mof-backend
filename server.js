@@ -1,25 +1,22 @@
-// server.js
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const PORT = process.env.PORT || 3003;
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import joinRoutes from './routes/joinRoutes.js';
 
-// Middleware
+dotenv.config();
+const app = express();
+
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
-// Import admin routes
-const adminRoutes = require('./routes/admin');
+app.use('/api/join', joinRoutes);
 
-// Mount all admin routes under /api/admin
-app.use('/api/admin', adminRoutes);
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB error:', err));
 
-// Optional: base route
-app.get('/', (req, res) => {
-  res.send('MOF Women API is running');
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
