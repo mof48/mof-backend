@@ -6,6 +6,8 @@ import joinRoutes from './routes/joinRoutes.js';
 
 dotenv.config();
 const app = express();
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/api/contacts', contactRoutes);
 
 app.use(cors());
 app.use(express.json());
