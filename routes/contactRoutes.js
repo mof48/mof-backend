@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { sendRequest, acceptRequest, declineRequest } from '../controllers/contactController.js';
+import authMiddleware from '../middleware/auth.js';
+
 const router = express.Router();
-const contactController = require('../controllers/contactController');
-const authMiddleware = require('../middleware/auth');
 
-router.post('/request', authMiddleware, contactController.sendRequest);
-router.post('/accept', authMiddleware, contactController.acceptRequest);
-router.post('/decline', authMiddleware, contactController.declineRequest);
+router.post('/request', authMiddleware, sendRequest);
+router.post('/accept', authMiddleware, acceptRequest);
+router.post('/decline', authMiddleware, declineRequest);
 
-module.exports = router;
+export default router;
