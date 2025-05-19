@@ -1,5 +1,9 @@
 import express from 'express';
-import { sendRequest, acceptRequest, declineRequest } from '../controllers/contactController.js';
+import {
+  sendRequest,
+  acceptRequest,
+  declineRequest
+} from '../controllers/contactController.js';
 import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
