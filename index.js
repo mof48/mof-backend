@@ -1,8 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import cors from 'cors';
-
+import cors from 'cors'
 import contactRoutes from './routes/contactRoutes.js'; // ✅ Correct path
 
 // Load .env variables
