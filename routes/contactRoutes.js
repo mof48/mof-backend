@@ -12,4 +12,6 @@ router.post('/request', authMiddleware, sendRequest);
 router.post('/accept', authMiddleware, acceptRequest);
 router.post('/decline', authMiddleware, declineRequest);
 
+router.get('/my-requests', authMiddleware, contactController.getUserRequests);
+
 export default router;

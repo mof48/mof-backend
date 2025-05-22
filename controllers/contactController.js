@@ -37,3 +37,19 @@ export const declineRequest = async (req, res) => {
     res.status(500).json({ message: 'Failed to decline request', error: err.message });
   }
 };
+// Get all contact requests for the logged-in user
+exports.getUserRequests = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const requests = await Contact.find({
+      $or: [{ from: userId }, { to: userId }]
+    })
+    .populate('from', 'name email')
+    .populate('to', 'name email')
+    .sort({ createdAt: -1 });
+
+    res.status(200).json(requests);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch requests', error: err.message });
+  }
+};
