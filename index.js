@@ -13,6 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/contacts', contactRoutes);
+app.use("/uploads", express.static("uploads"));
 
 // Test route
 app.get('/', (req, res) => {
