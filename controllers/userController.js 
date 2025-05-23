@@ -1,0 +1,20 @@
+import User from '../models/User.js';
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).send("User not found");
+
+    const { profilePhoto, bannerPhoto, bio, location, specialization } = req.body;
+    user.profilePhoto = profilePhoto || user.profilePhoto;
+    user.bannerPhoto = bannerPhoto || user.bannerPhoto;
+    user.bio = bio || user.bio;
+    user.location = location || user.location;
+    user.specialization = specialization || user.specialization;
+
+    await user.save();
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

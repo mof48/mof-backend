@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors'
 import contactRoutes from './routes/contactRoutes.js'; // ✅ Correct path
+import postRoutes from './routes/postRoutes.js';
 
 // Load .env variables
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/contacts', contactRoutes);
 app.use("/uploads", express.static("uploads"));
+app.use('/api/posts', postRoutes);
 
 // Test route
 app.get('/', (req, res) => {
