@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 
+// ✅ Update main profile
 export const updateUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -18,23 +19,25 @@ export const updateUserProfile = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-export const updateShadowProfile = async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
-      const { name, bio, profilePhoto } = req.body;
-  
-      user.shadowProfile.name = name || user.shadowProfile.name;
-      user.shadowProfile.bio = bio || user.shadowProfile.bio;
-      user.shadowProfile.profilePhoto = profilePhoto || user.shadowProfile.profilePhoto;
-  
-      await user.save();
-      res.json(user.shadowProfile);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  };
-  import User from '../models/User.js';
 
+// ✅ Update shadow profile
+export const updateShadowProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const { name, bio, profilePhoto } = req.body;
+
+    user.shadowProfile.name = name || user.shadowProfile.name;
+    user.shadowProfile.bio = bio || user.shadowProfile.bio;
+    user.shadowProfile.profilePhoto = profilePhoto || user.shadowProfile.profilePhoto;
+
+    await user.save();
+    res.json(user.shadowProfile);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ✅ NEW: Get all users (for SuggestedMembers)
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('_id name specialization profilePhoto');
