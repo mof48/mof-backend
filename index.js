@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors'
 import contactRoutes from './routes/contactRoutes.js'; // ✅ Correct path
 import postRoutes from './routes/postRoutes.js';
-
+import userRoutes from './routes/userRoutes.js';
 // Load .env variables
 dotenv.config();
 
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 // Connect API routes
 app.use('/api/contacts', contactRoutes); // ✅ Enable contact API
-
+app.use('/api/users', userRoutes); // Register /api/users endpoint
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
