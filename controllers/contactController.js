@@ -1,55 +1,53 @@
 import Contact from '../models/Contact.js';
 
-// Send a contact request
-export const sendRequest = async (req, res) => {
-  const { toUserId, message } = req.body;
-  const fromUserId = req.user.id;
-
+// Create a contact request
+export const sendContactRequest = async (req, res) => {
   try {
-    const existing = await Contact.findOne({ from: fromUserId, to: toUserId });
-    if (existing) {
-      return res.status(400).json({ message: 'Request already sent or exists.' });
-    }
-
-    const request = await Contact.create({ from: fromUserId, to: toUserId, message, status: 'pending' });
-    res.status(200).json(request);
+    const { to, message } = req.body;
+    const newRequest = await Contact.create({
+      from: req.user._id,
+      to,
+      message,
+    });
+    res.status(201).json(newRequest);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to send request', error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Accept request
-export const acceptRequest = async (req, res) => {
-  try {
-    const request = await Contact.findByIdAndUpdate(req.body.requestId, { status: 'accepted' }, { new: true });
-    res.status(200).json(request);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to accept request', error: err.message });
-  }
-};
-
-// Decline request
-export const declineRequest = async (req, res) => {
-  try {
-    const request = await Contact.findByIdAndUpdate(req.body.requestId, { status: 'declined' }, { new: true });
-    res.status(200).json(request);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to decline request', error: err.message });
-  }
-};
-// Get all contact requests for the logged-in user
-exports.getUserRequests = async (req, res) => {
-  const userId = req.user.id;
+// Get requests where user is sender or receiver
+export const getUserRequests = async (req, res) => {
   try {
     const requests = await Contact.find({
-      $or: [{ from: userId }, { to: userId }]
+      $or: [{ from: req.user._id }, { to: req.user._id }],
     })
-    .populate('from', 'name email')
-    .populate('to', 'name email')
-    .sort({ createdAt: -1 });
+      .populate('from', 'name profilePhoto')
+      .populate('to', 'name profilePhoto')
+      .sort({ createdAt: -1 });
 
-    res.status(200).json(requests);
+    res.json(requests);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch requests', error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Update request status
+export const respondToRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const request = await Contact.findById(id);
+    if (!request) return res.status(404).json({ error: 'Request not found' });
+
+    if (request.to.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    request.status = status;
+    await request.save();
+    res.json(request);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

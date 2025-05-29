@@ -1,17 +1,15 @@
 import express from 'express';
 import {
-  sendRequest,
-  acceptRequest,
-  declineRequest
+  sendContactRequest,
+  getUserRequests,
+  respondToRequest,
 } from '../controllers/contactController.js';
-import authMiddleware from '../middleware/auth.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/request', authMiddleware, sendRequest);
-router.post('/accept', authMiddleware, acceptRequest);
-router.post('/decline', authMiddleware, declineRequest);
-
-router.get('/my-requests', authMiddleware, contactController.getUserRequests);
+router.post('/', protect, sendContactRequest);
+router.get('/', protect, getUserRequests);
+router.patch('/:id', protect, respondToRequest);
 
 export default router;
