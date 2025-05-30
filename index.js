@@ -1,31 +1,33 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import cors from 'cors'
-import contactRoutes from './routes/contactRoutes.js'; // ✅ Correct path
+import cors from 'cors';
+
+import contactRoutes from './routes/contactRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-// Load .env variables
+
+// ✅ Load .env variables
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api/contacts', contactRoutes);
 app.use("/uploads", express.static("uploads"));
-app.use('/api/posts', postRoutes);
 
-// Test route
+// ✅ API routes
+app.use('/api/contacts', contactRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/users', userRoutes);
+
+// ✅ Health check route
 app.get('/', (req, res) => {
   res.send('MOF Women Backend API is running');
 });
 
-// Connect API routes
-app.use('/api/contacts', contactRoutes); // ✅ Enable contact API
-app.use('/api/users', userRoutes); // Register /api/users endpoint
-// MongoDB connection
+// ✅ Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
