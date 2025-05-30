@@ -1,48 +1,66 @@
+import Joi from 'joi';
 import User from '../models/User.js';
+
+// Validation schemas
+const mainProfileSchema = Joi.object({
+  profilePhoto: Joi.string().allow('', null),
+  bannerPhoto: Joi.string().allow('', null),
+  bio: Joi.string().allow('', null),
+  location: Joi.string().allow('', null),
+  specialization: Joi.string().allow('', null)
+});
+
+const shadowProfileSchema = Joi.object({
+  name: Joi.string().allow('', null),
+  bio: Joi.string().allow('', null),
+  profilePhoto: Joi.string().allow('', null)
+});
 
 // ✅ Update main profile
 export const updateUserProfile = async (req, res) => {
   try {
+    const { error, value } = mainProfileSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).send("User not found");
+    if (!user) return res.status(404).send('User not found');
 
-    const { profilePhoto, bannerPhoto, bio, location, specialization } = req.body;
-    user.profilePhoto = profilePhoto || user.profilePhoto;
-    user.bannerPhoto = bannerPhoto || user.bannerPhoto;
-    user.bio = bio || user.bio;
-    user.location = location || user.location;
-    user.specialization = specialization || user.specialization;
-
+    Object.assign(user, value);
     await user.save();
+
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Update profile error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 // ✅ Update shadow profile
 export const updateShadowProfile = async (req, res) => {
   try {
+    const { error, value } = shadowProfileSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
     const user = await User.findById(req.user._id);
-    const { name, bio, profilePhoto } = req.body;
+    if (!user) return res.status(404).send('User not found');
 
-    user.shadowProfile.name = name || user.shadowProfile.name;
-    user.shadowProfile.bio = bio || user.shadowProfile.bio;
-    user.shadowProfile.profilePhoto = profilePhoto || user.shadowProfile.profilePhoto;
-
+    Object.assign(user.shadowProfile, value);
     await user.save();
+
     res.json(user.shadowProfile);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Update shadow error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// ✅ NEW: Get all users (for SuggestedMembers)
+// ✅ Get all users
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('_id name specialization profilePhoto');
     res.json(users);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Fetch users error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

@@ -1,16 +1,21 @@
 import express from 'express';
-import { updateUserProfile, updateShadowProfile } from '../controllers/userController.js';
-import { protect } from '../middleware/authMiddleware.js'; // ✅ import protect middleware
+import auth from '../middleware/auth.js';
+import {
+  updateUserProfile,
+  updateShadowProfile,
+  getAllUsers
+} from '../controllers/userController.js';
 
 const router = express.Router();
 
-// ✅ Add protected route to test JWT and user access
-router.get('/dashboard', protect, (req, res) => {
+router.use(auth);
+
+router.get('/dashboard', (req, res) => {
   res.json({ message: 'Welcome, ' + req.user.name });
 });
 
-// ✅ User updates
-router.patch('/profile', protect, updateUserProfile);
-router.patch('/shadow-profile', protect, updateShadowProfile);
+router.patch('/profile', updateUserProfile);
+router.patch('/shadow-profile', updateShadowProfile);
+router.get('/all', getAllUsers);
 
 export default router;

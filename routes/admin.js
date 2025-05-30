@@ -1,21 +1,19 @@
-// routes/admin.js
-const express = require('express');
+import express from 'express';
+import auth from '../middleware/auth.js';
+import isAdmin from '../middleware/isAdmin.js';
+import {
+  getDashboardStats,
+  getChartData,
+  getRecentApprovals
+} from '../controllers/adminController.js';
+
 const router = express.Router();
 
-// Middleware
-const auth = require('../middleware/auth');
-const isAdmin = require('../middleware/isAdmin');
+// Admin-protected routes
+router.use(auth, isAdmin);
 
-// Controllers
-const {
-  getChartData,
-  getRecentApprovals,
-  getDashboardStats,
-} = require('../controllers/adminController');
+router.get('/stats', getDashboardStats);
+router.get('/chart-data', getChartData);
+router.get('/recent-approvals', getRecentApprovals);
 
-// 🔐 All routes below are protected (token + admin)
-router.get('/stats', auth, isAdmin, getDashboardStats);
-router.get('/chart-data', auth, isAdmin, getChartData);
-router.get('/recent-approvals', auth, isAdmin, getRecentApprovals);
-
-module.exports = router;
+export default router;

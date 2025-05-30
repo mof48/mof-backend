@@ -1,24 +1,41 @@
+// server.js
 import express from 'express';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import cors from 'cors';
+
+// Load environment variables
+dotenv.config();
+
+// Import routes
 import joinRoutes from './routes/joinRoutes.js';
 
-dotenv.config();
 const app = express();
-const contactRoutes = require('./routes/contactRoutes');
-app.use('/api/contacts', contactRoutes);
 
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
+// Routes
 app.use('/api/join', joinRoutes);
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+// Root route
+app.get('/', (req, res) => {
+  res.send('MOF Women API Server is Running');
+});
 
-const PORT = process.env.PORT || 3003;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Connect to MongoDB and start server
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    const PORT = process.env.PORT || 3003;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err.message);
+  });

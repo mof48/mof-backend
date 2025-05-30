@@ -1,19 +1,28 @@
-const express = require("express");
-const router = express.Router();
-const upload = require("../middleware/uploadMiddleware");
-const {
+import express from 'express';
+import auth from '../middleware/auth.js';
+import upload from '../middleware/uploadMiddleware.js';
+import {
   uploadCredential,
   getUserCredentialStatus,
   getAllCredentialRequests,
   verifyCredential,
-  rejectCredential,
-} = require("../controllers/credentialController");
+  rejectCredential
+} from '../controllers/credentialController.js';
 
-// all require auth middleware before
-router.post("/upload", upload.single("credential"), uploadCredential);
-router.get("/status", getUserCredentialStatus);
-router.get("/requests", getAllCredentialRequests);
-router.post("/verify/:id", verifyCredential);
-router.post("/reject/:id", rejectCredential);
+const router = express.Router();
 
-module.exports = router;
+// All routes require auth
+router.use(auth);
+
+// Upload credential (only one allowed per user)
+router.post('/upload', upload.single('credential'), uploadCredential);
+
+// Get logged-in user's credential status
+router.get('/status', getUserCredentialStatus);
+
+// Admin-only routes
+router.get('/requests', getAllCredentialRequests);
+router.post('/verify/:id', verifyCredential);
+router.post('/reject/:id', rejectCredential);
+
+export default router;
