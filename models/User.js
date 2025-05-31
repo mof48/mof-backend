@@ -1,29 +1,57 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'member', 'guest', 'speaker'],
+      default: 'member',
+    },
+    tier: {
+      type: String,
+      enum: ['gold-rose', 'platinum-lily', 'diamond-orchid'],
+      default: 'gold-rose',
+    },
+    membershipNumber: {
+      type: String,
+      unique: true,
+    },
+    state: {
+      type: String,
+    },
+    profession: {
+      type: String,
+    },
+    shadowProfile: {
+      name: String,
+      bio: String,
+    },
+    avatar: {
+      type: String, // URL to profile image
+    },
+    isTherapist: {
+      type: Boolean,
+      default: false,
+    },
   },
-  password: { type: String, required: true },
-
-  profilePhoto: { type: String, default: '' },
-  bannerPhoto: { type: String, default: '' },
-  bio: { type: String, default: '' },
-  location: { type: String, default: '' },
-  specialization: { type: String, default: '' },
-
-  shadowProfile: {
-    name: { type: String, default: 'Shenzhen Nongke Orchid' },
-    profilePhoto: { type: String, default: '' },
-    bio: { type: String, default: '' },
+  {
+    timestamps: true, // ✅ Adds createdAt and updatedAt
   }
-}, {
-  timestamps: true
-});
+);
 
-const User = mongoose.model('User', userSchema);
-export default User;
+module.exports = mongoose.model('User', userSchema);
